@@ -1,0 +1,13 @@
+# Versions observed on the original NVIDIA Linux deployment.
+# Install vLLM/PyTorch in a CUDA-compatible environment; this is not a portable lockfile.
+torch==2.11.0
+torchvision==0.26.0
+transformers==5.13.1
+vllm==0.24.0
+av==19.0.1
+numpy==2.5.4
+pillow==12.3.0
+scipy==1.18.1
+lap==0.5.13
+onnxruntime==1.31.0
+rtmlib==0.0.16

@@ -1,0 +1,20 @@
+[
+  {
+    "repo": "Qwen/Qwen3-VL-8B-Instruct",
+    "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "path": "models/qwen3-vl-8b",
+    "license": "apache-2.0"
+  },
+  {
+    "repo": "PekingU/rtdetr_v2_r50vd",
+    "revision": "282494075698cab9faa1096ae26856890030c817",
+    "path": "models/rtdetr-v2",
+    "license": "apache-2.0"
+  },
+  {
+    "repo": "IDEA-Research/grounding-dino-tiny",
+    "revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "path": "models/grounding-dino",
+    "license": "apache-2.0"
+  }
+]

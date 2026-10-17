@@ -1,0 +1,27 @@
+[
+  {
+    "file": "pose.zip",
+    "url": "https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728.zip",
+    "sha256": "a4e4d56e9dc043e2171c73f5918f334509a47fde60182c1961370c7160334ac0"
+  },
+  {
+    "file": "yunet.onnx",
+    "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+    "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
+  },
+  {
+    "file": "YuNet-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/opencv/opencv_zoo/main/models/face_detection_yunet/LICENSE",
+    "sha256": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958"
+  },
+  {
+    "file": "rtmlib-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/Tau-J/rtmlib/main/LICENSE",
+    "sha256": "ec0a9c27a980866653f5a9901ea0e2458df074b1516e45c6842736ee5c5a4a1c"
+  },
+  {
+    "file": "DWPose-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/IDEA-Research/DWPose/main/LICENSE",
+    "sha256": "ec5aa54eef312195c4494873a37158b19b0d523e25cec570189e6aa86289cf42"
+  }
+]
