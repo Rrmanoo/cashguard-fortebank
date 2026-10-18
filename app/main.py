@@ -186,9 +186,9 @@ async def status(job_id:str):
 async def rules(): return json.loads((ROOT/'rules/catalog.json').read_text())
 
 @app.get('/')
-async def index(): return FileResponse(ROOT/'app/static/index.html')
+async def index(): return FileResponse(ROOT/'app/static/index.html',headers={'Cache-Control':'no-cache'})
 
 @app.get('/examples', include_in_schema=False)
-async def examples_page(): return FileResponse(ROOT/'app/static/index.html')
+async def examples_page(): return FileResponse(ROOT/'app/static/index.html',headers={'Cache-Control':'no-cache'})
 
 app.mount('/static',StaticFiles(directory=ROOT/'app/static'),name='static')

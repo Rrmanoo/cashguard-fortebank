@@ -1,0 +1,280 @@
+{
+  "version": "2026.10.18-final.1",
+  "wall_seconds": 1715.714,
+  "sum_unique_job_seconds": 3409.505,
+  "video_seconds_file_weighted": 1444.1632319999999,
+  "video_seconds_unique": 1299.863232,
+  "metrics_42": {
+    "n": 42,
+    "positives": 22,
+    "negatives": 20,
+    "completed": 42,
+    "failed": 0,
+    "tp": 22,
+    "tn": 0,
+    "fp": 20,
+    "fn_completed": 0,
+    "positive_errors": 0,
+    "accuracy_all": 0.5238095238095238,
+    "precision": 0.5238095238095238,
+    "recall_all": 1.0,
+    "recall_completed": 1.0,
+    "f1_all": 0.6875,
+    "specificity_all": 0.0,
+    "balanced_accuracy_all": 0.5,
+    "primary_reference_tags": 23,
+    "primary_type_hits": 15,
+    "primary_type_recall_all": 0.6521739130434783,
+    "predicted_type_tags": 192,
+    "false_type_tags_on_negative_videos": 82,
+    "extra_types_on_positive_videos_are_unverified": true,
+    "completed_under_300_sec": 42
+  },
+  "metrics_40_unique": {
+    "n": 40,
+    "positives": 21,
+    "negatives": 19,
+    "completed": 40,
+    "failed": 0,
+    "tp": 21,
+    "tn": 0,
+    "fp": 19,
+    "fn_completed": 0,
+    "positive_errors": 0,
+    "accuracy_all": 0.525,
+    "precision": 0.525,
+    "recall_all": 1.0,
+    "recall_completed": 1.0,
+    "f1_all": 0.6885245901639344,
+    "specificity_all": 0.0,
+    "balanced_accuracy_all": 0.5,
+    "primary_reference_tags": 22,
+    "primary_type_hits": 14,
+    "primary_type_recall_all": 0.6363636363636364,
+    "predicted_type_tags": 176,
+    "false_type_tags_on_negative_videos": 76,
+    "extra_types_on_positive_videos_are_unverified": true,
+    "completed_under_300_sec": 40
+  },
+  "unique_job_seconds": {
+    "min": 53.351,
+    "median": 79.0865,
+    "p95": 116.393,
+    "max": 123.354,
+    "p95_method": "nearest rank"
+  },
+  "duplicate_pair_count": 2,
+  "per_type_42": [
+    {
+      "type_id": "recount_after_partial_return_missing",
+      "name": "Нет контрольного пересчёта остатка",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 1,
+      "false_alerts_on_negative_videos": 1
+    },
+    {
+      "type_id": "identity_check_missing",
+      "name": "Нет предварительной идентификации",
+      "primary_reference_support": 2,
+      "primary_matches": 2,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 18,
+      "false_alerts_on_negative_videos": 8
+    },
+    {
+      "type_id": "previous_cash_unsecured",
+      "name": "Деньги предыдущего клиента не убраны",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 5,
+      "false_alerts_on_negative_videos": 2
+    },
+    {
+      "type_id": "workstation_unlocked_unattended",
+      "name": "Компьютер оставлен без блокировки",
+      "primary_reference_support": 2,
+      "primary_matches": 2,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 4,
+      "false_alerts_on_negative_videos": 1
+    },
+    {
+      "type_id": "safe_accessible_to_clients",
+      "name": "Сейф находится в клиентской зоне",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 34,
+      "false_alerts_on_negative_videos": 14
+    },
+    {
+      "type_id": "cashier_area_access_unsecured",
+      "name": "Кассовая зона оставлена доступной",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 15,
+      "false_alerts_on_negative_videos": 5
+    },
+    {
+      "type_id": "collection_bag_inspection_missing",
+      "name": "Сумка принята без осмотра",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 3,
+      "false_alerts_on_negative_videos": 1
+    },
+    {
+      "type_id": "concurrent_customer_operations",
+      "name": "Перекрытие операций клиентов",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 3,
+      "false_alerts_on_negative_videos": 0
+    },
+    {
+      "type_id": "safe_left_open",
+      "name": "Сейф оставлен открытым",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 4,
+      "false_alerts_on_negative_videos": 3
+    },
+    {
+      "type_id": "safe_key_unattended",
+      "name": "Ключ от сейфа оставлен без присмотра",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 0,
+      "false_alerts_on_negative_videos": 0
+    },
+    {
+      "type_id": "safe_key_left_in_lock",
+      "name": "Ключ оставлен в замке сейфа",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 0,
+      "false_alerts_on_negative_videos": 0
+    },
+    {
+      "type_id": "cash_left_unattended",
+      "name": "Наличные оставлены без присмотра",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 3,
+      "false_alerts_on_negative_videos": 2
+    },
+    {
+      "type_id": "client_in_cashier_zone",
+      "name": "Клиент вошёл в рабочую зону",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 17,
+      "false_alerts_on_negative_videos": 8
+    },
+    {
+      "type_id": "zones_not_separated",
+      "name": "Не разделены кассовая и клиентская зоны",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 35,
+      "false_alerts_on_negative_videos": 15
+    },
+    {
+      "type_id": "cashier_works_client_side",
+      "name": "Кассир работает со стороны клиента",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 28,
+      "false_alerts_on_negative_videos": 15
+    },
+    {
+      "type_id": "count_without_customer",
+      "name": "Пересчёт денег клиента без клиента",
+      "primary_reference_support": 2,
+      "primary_matches": 1,
+      "primary_recall": 0.5,
+      "predicted_on_all_videos": 5,
+      "false_alerts_on_negative_videos": 2
+    },
+    {
+      "type_id": "clients_cash_not_separated",
+      "name": "Наличные разных клиентов не разделены",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 3,
+      "false_alerts_on_negative_videos": 0
+    },
+    {
+      "type_id": "clients_cash_mixed",
+      "name": "Смешаны деньги разных клиентов",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 2,
+      "false_alerts_on_negative_videos": 0
+    },
+    {
+      "type_id": "personal_items",
+      "name": "Личные вещи на рабочей поверхности",
+      "primary_reference_support": 1,
+      "primary_matches": 1,
+      "primary_recall": 1.0,
+      "predicted_on_all_videos": 9,
+      "false_alerts_on_negative_videos": 4
+    },
+    {
+      "type_id": "cash_unsecured_during_personal_activity",
+      "name": "Деньги оставлены при личных действиях",
+      "primary_reference_support": 1,
+      "primary_matches": 0,
+      "primary_recall": 0.0,
+      "predicted_on_all_videos": 3,
+      "false_alerts_on_negative_videos": 1
+    }
+  ],
+  "call_audit": {
+    "completed_calls": 1439,
+    "http_attempts": 1441,
+    "reasoning_returned_calls": 0,
+    "prompt_tokens": 9464470,
+    "completion_tokens": 513865
+  },
+  "always_alert_42": {
+    "tp": 22,
+    "tn": 0,
+    "fp": 20,
+    "fn": 0,
+    "recall": 1,
+    "precision": 0.5238095238095238,
+    "accuracy": 0.5238095238095238,
+    "f1": 0.6875,
+    "balanced_accuracy": 0.5
+  },
+  "historical_qwen36_five_rule_pipeline_42": {
+    "tp": 4,
+    "tn": 20,
+    "fp": 0,
+    "fn": 18,
+    "recall": 0.18181818181818182,
+    "precision": 1,
+    "accuracy": 0.5714285714285714,
+    "f1": 0.3076923076923077,
+    "timing_component_sum_seconds": 1531.981,
+    "timing_note": "Historical sum of preprocessing/model components; not paired wall time. Different rule set and architecture."
+  },
+  "evaluation_scope": "Development set used to design criteria/prompts; no independent test. Extra types on positives are unverified. Errors count in recall_all denominator; hash duplicates expanded only for 42-file metric."
+}

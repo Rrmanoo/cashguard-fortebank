@@ -4,7 +4,7 @@ from pathlib import Path
 import httpx
 
 def run(a):
- key=Path(a.key_file).read_text().strip();base=a.url.rstrip('/');report={'base_url':base,'checks':{}}
+ Path(a.output).parent.mkdir(parents=True,exist_ok=True);key=Path(a.key_file).read_text().strip();base=a.url.rstrip('/');report={'base_url':base,'checks':{}}
  with httpx.Client(base_url=base,timeout=90,trust_env=False,follow_redirects=False,headers={'ngrok-skip-browser-warning':'1'}) as client:
   check=report['checks'];r=client.get('/healthz');r.raise_for_status();report['health']=r.json();check['health']=True
   for label,headers in [('no_key',{}),('wrong_key',{'X-API-Key':'wrong-key'})]:

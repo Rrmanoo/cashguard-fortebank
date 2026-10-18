@@ -1,0 +1,64 @@
+{
+  "artifact_integrity": {
+    "scope": "Structural integrity only; this does not prove correct visual interpretation or legal applicability.",
+    "file_records": 42,
+    "unique_inputs": 40,
+    "completed_unique": 40,
+    "failed_unique": 0,
+    "evidence_frames_verified": 410,
+    "calls_verified": 1439,
+    "frozen_inference_files_match": {
+      "app/release/engine.py": true,
+      "app/release/logic.py": true,
+      "app/config.py": true,
+      "app/model_client.py": true,
+      "app/video.py": true,
+      "rules/criteria.json": true,
+      "rules/catalog.json": true
+    },
+    "errors": [],
+    "passed": true,
+    "git_revision_at_validation": "758112f0dd773f28c4840f4030ce5eb76a5d9e66"
+  },
+  "code_tests": {
+    "passed": 53,
+    "failed": 0,
+    "environments": [
+      "local macOS Python 3.13",
+      "CPU deployment Linux Python 3.10"
+    ]
+  },
+  "jury_api_smoke": {
+    "base_url": "https://luther-huggable-subaxially.ngrok-free.dev",
+    "checks": {
+      "health": true,
+      "no_key_401": true,
+      "wrong_key_401": true,
+      "no_key_in_html": true,
+      "twenty_rules": true,
+      "private_session": true,
+      "private_video_range": true,
+      "accepted_202": true,
+      "result_contract": true,
+      "under_five_minutes": true
+    },
+    "end_to_end_seconds": 58.748,
+    "job_status": "done"
+  },
+  "limits": [
+    "Development data, not independent test",
+    "All 20 normal videos received false alerts",
+    "One external end-to-end sample does not prove a universal five-minute SLA",
+    "Internet-free deployment has not been tested"
+  ],
+  "deployment_inference_matches_benchmark": {
+    "app/release/engine.py": true,
+    "app/release/logic.py": true,
+    "app/config.py": true,
+    "app/model_client.py": true,
+    "app/video.py": true,
+    "rules/criteria.json": true,
+    "rules/catalog.json": true
+  },
+  "original_upload_removed_after_completion": true
+}
