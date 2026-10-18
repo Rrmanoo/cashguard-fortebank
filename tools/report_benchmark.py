@@ -1,11 +1,11 @@
 """Publish aggregate metrics only; keep per-video evidence/report under private outputs."""
-import argparse,collections,html,json,statistics
+import argparse,collections,html,json,statistics,math
 from pathlib import Path
 
 def write(p,x):p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,ensure_ascii=False,indent=2))
 def pct(x):return '—' if x is None else f'{x*100:.2f}%'
 def report(benchmark,repo):
- root=Path(benchmark);repo=Path(repo);s=json.loads((root/'summary.json').read_text());rows=s['records'];catalog=json.loads((repo/'rules/criteria.json').read_text());k42=s['metrics_42'];k40=s['metrics_40_unique'];per=[]
+ root=Path(benchmark);repo=Path(repo);s=json.loads((root/'summary.json').read_text());rows=s['records'];unique_times=sorted({r['sha256']:r['elapsed_sec'] for r in rows}.values());s['unique_job_seconds']={'min':unique_times[0],'median':statistics.median(unique_times),'p95':unique_times[math.ceil(.95*len(unique_times))-1],'max':unique_times[-1],'p95_method':'nearest rank'};write(root/'summary.json',s);catalog=json.loads((repo/'rules/criteria.json').read_text());k42=s['metrics_42'];k40=s['metrics_40_unique'];per=[]
  for c in catalog:
   typ=c['id'];truth=[r for r in rows if typ in r['expected_types']];pred=[r for r in rows if typ in r['predicted_types']];hit=sum(typ in r['predicted_types'] and r['status']=='done' for r in truth)
   per.append({'type_id':typ,'name':c['name'],'primary_reference_support':len(truth),'primary_matches':hit,'primary_recall':hit/len(truth) if truth else None,'predicted_on_all_videos':len(pred),'false_alerts_on_negative_videos':sum(not r['expected'] for r in pred)})

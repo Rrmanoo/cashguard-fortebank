@@ -1,0 +1,18 @@
+[Unit]
+Description=CashGuard jury application
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/cashguard
+EnvironmentFile=%h/cashguard/private/service.env
+Environment=OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
+ExecStart=%h/cashguard/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 9017 --workers 1 --no-access-log --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

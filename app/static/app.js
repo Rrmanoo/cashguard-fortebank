@@ -101,7 +101,7 @@ function renderExamples(){
  $('examples-summary').textContent=`${exampleData.model_label||"Qwen3.6 · финальная версия"} · обработано ${done.length} из ${items.length} · совпадений с разметкой ${matches} из ${done.length}`+(failed.length?` · ошибок ${failed.length}`:'')+(pending?` · осталось ${pending}`:' · прогон завершён');
  videoObserver.disconnect();$('examples-grid').replaceChildren();
  const filter=$('examples-filter').value;
- const shown=items.filter(x=>filter==='all'||(filter==='done'&&x.status==='done')||(filter==='failed'&&x.status==='failed')||(filter==='mismatch'&&x.status==='done'&&!x.matches_reference)||(filter==='violation'&&x.status==='done'&&x.verdict==='violation'));
+ const shown=items.filter(x=>filter==='all'||(filter==='done'&&x.status==='done')||(filter==='failed'&&x.status==='failed')||(filter==='mismatch'&&x.status==='done'&&!x.matches_reference)||(filter==='type_mismatch'&&x.status==='done'&&x.expected_violation&&!(x.primary_type_matches||[]).length)||(filter==='violation'&&x.status==='done'&&x.verdict==='violation'));
  for(const item of shown){
   const card=text('article','','example-card');card.dataset.exampleId=item.id;
   const head=text('div','','example-head');head.append(text('h3',item.filename),text('span',states[item.status]||item.status,'example-state '+item.status));card.append(head);
@@ -112,9 +112,11 @@ function renderExamples(){
    const direct=text('a','Открыть видео отдельно ↗','direct-video');direct.href=player.dataset.src;direct.target='_blank';direct.rel='noopener';card.append(direct);
   }
   card.append(text('p','Разметка: '+(item.expected_violation?'есть нарушение':'без нарушения')+(item.expected_timestamp_sec!=null?` · ${format(item.expected_timestamp_sec)}`:''),'reference'));
+  if(item.human_type)card.append(text('p','Тип по разметке: '+item.human_type,'reference'));
   if(item.status==='done'){
    card.append(text('p','Qwen3.6: '+(item.verdict==='violation'?`найдены признаки (${item.violation_count})`:'признаки не обнаружены'),'model-answer'));
-   card.append(text('p',item.matches_reference?'Совпадает с разметкой':'Расхождение с разметкой',item.matches_reference?'comparison match':'comparison mismatch'));
+   card.append(text('p',item.matches_reference?'Бинарная метка совпала':'Бинарная метка не совпала',item.matches_reference?'comparison match':'comparison mismatch'));
+   if(item.expected_violation&&(item.expected_types||[]).length)card.append(text('p',(item.primary_type_matches||[]).length?'Основной тип из разметки найден':'Основной тип из разметки не найден','comparison'));
    card.append(text('p',`Обработка: ${Math.round(item.elapsed_sec)} сек`,'small'));
    const open=text('button','Открыть результат проверки ↗');open.onclick=()=>openExample(item);card.append(open);
   }else if(item.status==='failed'){card.append(text('p',item.error||'Не удалось обработать видео','small'));}

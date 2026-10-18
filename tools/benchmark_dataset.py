@@ -1,5 +1,5 @@
 """Private development benchmark. Labels are used only after inference, never in prompts."""
-import argparse, asyncio, hashlib, json, os, sys, time
+import argparse, asyncio, hashlib, json, os, sys, time, math, statistics
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 
@@ -50,7 +50,7 @@ async def run(a):
      record={'status':'failed','error':type(exc).__name__+': '+str(exc)[:250],'elapsed_sec':round(time.monotonic()-begin,3),'predicted_types':[]};save(trace/'failure.json',record)
     done[h]=record;expanded=[{**r,**done[r['sha256']]} for r in rows if r['sha256'] in done];save(out/'progress.json',{'unique_done':len(done),'unique_total':len(groups),'wall_seconds':time.monotonic()-start,'records':expanded,'metrics_so_far':metrics(expanded)});print('DONE',len(done),'/',len(groups),refs[0]['filename'],record['status'],round(record['elapsed_sec'],1),record.get('predicted_types',[]),flush=True)
   await asyncio.gather(*(one(h,refs) for h,refs in groups.items()))
- records=[{**r,**done[r['sha256']]} for r in rows];unique=[next(r for r in records if r['sha256']==h) for h in groups];times=sorted(r['elapsed_sec'] for r in unique);total={'version':VERSION,'wall_seconds':round(time.monotonic()-start,3),'sum_unique_job_seconds':round(sum(times),3),'video_seconds_file_weighted':sum(r['duration_sec'] for r in rows),'video_seconds_unique':sum(r['duration_sec'] for r in unique),'metrics_42':metrics(records),'metrics_40_unique':metrics(unique),'unique_job_seconds':{'min':times[0],'median':times[len(times)//2],'p95':times[min(len(times)-1,int(.95*len(times)))],'max':times[-1]},'duplicates':[[r['filename'] for r in refs] for refs in groups.values() if len(refs)>1],'records':records};save(out/'summary.json',total);print('FINISHED',json.dumps({k:v for k,v in total.items() if k!='records'},ensure_ascii=False),flush=True)
+ records=[{**r,**done[r['sha256']]} for r in rows];unique=[next(r for r in records if r['sha256']==h) for h in groups];times=sorted(r['elapsed_sec'] for r in unique);total={'version':VERSION,'wall_seconds':round(time.monotonic()-start,3),'sum_unique_job_seconds':round(sum(times),3),'video_seconds_file_weighted':sum(r['duration_sec'] for r in rows),'video_seconds_unique':sum(r['duration_sec'] for r in unique),'metrics_42':metrics(records),'metrics_40_unique':metrics(unique),'unique_job_seconds':{'min':times[0],'median':statistics.median(times),'p95':times[math.ceil(.95*len(times))-1],'max':times[-1]},'duplicates':[[r['filename'] for r in refs] for refs in groups.values() if len(refs)>1],'records':records};save(out/'summary.json',total);print('FINISHED',json.dumps({k:v for k,v in total.items() if k!='records'},ensure_ascii=False),flush=True)
 
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('--videos',required=True);p.add_argument('--labels',required=True);p.add_argument('--output',required=True);p.add_argument('--type-map',help='Private evaluation-only JSON: numeric filename suffix -> annotated type IDs');p.add_argument('--concurrency',type=int,default=2);p.add_argument('--deadline',type=int,default=270);a=p.parse_args();asyncio.run(run(a))

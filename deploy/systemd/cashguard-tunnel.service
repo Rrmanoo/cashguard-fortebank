@@ -1,0 +1,16 @@
+[Unit]
+Description=CashGuard HTTPS tunnel
+After=network-online.target cashguard.service
+
+[Service]
+Type=simple
+EnvironmentFile=%h/cashguard/private/tunnel.env
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env ngrok http http://127.0.0.1:9017 --url ${NGROK_URL} --inspect=false
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

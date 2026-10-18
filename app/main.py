@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import APIKeyHeader
 from . import store
+from .contracts import Submission, JobStatus
 from .config import DATA, ROOT, MAX_BYTES, JOB_TIMEOUT, RETENTION_HOURS
 from . import model_client
 from .examples import router as examples_router
@@ -144,7 +145,7 @@ async def run(job,path):
             if scratch.is_dir(): shutil.rmtree(scratch,ignore_errors=True)
         active=False
 
-@app.post('/api/v1/analyze',dependencies=[Depends(auth)],status_code=202)
+@app.post('/api/v1/analyze',dependencies=[Depends(auth)],status_code=202,response_model=Submission)
 async def submit(file:UploadFile=File(...)):
     global active
     if not (file.filename or '').lower().endswith('.mov'):
@@ -175,7 +176,7 @@ async def submit(file:UploadFile=File(...)):
         raise
     finally: await file.close()
 
-@app.get('/api/v1/jobs/{job_id}',dependencies=[Depends(auth)])
+@app.get('/api/v1/jobs/{job_id}',dependencies=[Depends(auth)],response_model=JobStatus,response_model_exclude_none=True)
 async def status(job_id:str):
     result=store.get(job_id)
     if result is None: raise HTTPException(404,'Job not found or expired')
