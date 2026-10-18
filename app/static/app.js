@@ -30,6 +30,10 @@ function show(result){
   $('events').append(card);
  }
  $('limitations').textContent=(result.limitations||[]).join(' ');
+ $('uncertain-rows').replaceChildren();
+ const pending=result.review_candidates||[];
+ $('uncertain').hidden=!pending.length;$('uncertain-title').textContent=`Не удалось подтвердить или исключить: ${pending.length} критериев`;
+ for(const c of pending){const row=text('p',`${c.type} · ${format(c.timecode_sec)} · ${c.reason}`,'small');$('uncertain-rows').append(row);}
  $('timeline-rows').replaceChildren();
  $('timeline').hidden=!(result.event_timeline||[]).length;
  for(const w of result.event_timeline||[]){
@@ -42,7 +46,7 @@ function show(result){
   for(const [name,f] of Object.entries(w.facts||{})){
    if(f.state==='yes')facts.append(text('li',`${eventNames[name]||name} · ${format(f.time)} · оценка модели ${Math.round(f.confidence*100)}%`));
   }
-  row.append(facts,text('small',`${count} наблюдаемых событий · скрытые действия не оцениваются`));
+  row.append(facts,text('small',w.operation?`Наблюдаемая операция: ${w.operation}`:`${count} наблюдаемых событий`));
   $('timeline-rows').append(row);
  }
 }
@@ -52,7 +56,7 @@ $('analyze').onclick=async()=>{
  if(file.size>128*1024*1024){$('status').textContent='Размер файла превышает 128 МБ.';return;}
  selection++;
  $('analyze').disabled=true;$('progress').hidden=false;$('status').textContent='Загрузка записи…';
- $('events').replaceChildren();$('verdict').hidden=true;$('timeline').hidden=true;$('limitations').textContent='';
+ $('events').replaceChildren();$('verdict').hidden=true;$('timeline').hidden=true;$('uncertain').hidden=true;$('limitations').textContent='';
  const start=Date.now(),headers={'X-API-Key':key};
  try{
   const data=new FormData();data.append('file',file);
@@ -94,7 +98,7 @@ function renderExamples(){
  $('examples-count').textContent=`· ${items.length}`;
  const matches=done.filter(x=>x.matches_reference).length;
  const pending=items.length-done.length-failed.length;
- $('examples-summary').textContent=`Обработано ${done.length} из ${items.length} · совпадений с разметкой ${matches} из ${done.length}`+(failed.length?` · ошибок ${failed.length}`:'')+(pending?` · осталось ${pending}`:' · прогон завершён');
+ $('examples-summary').textContent=`${exampleData.model_label||"Qwen3.6 · финальная версия"} · обработано ${done.length} из ${items.length} · совпадений с разметкой ${matches} из ${done.length}`+(failed.length?` · ошибок ${failed.length}`:'')+(pending?` · осталось ${pending}`:' · прогон завершён');
  videoObserver.disconnect();$('examples-grid').replaceChildren();
  const filter=$('examples-filter').value;
  const shown=items.filter(x=>filter==='all'||(filter==='done'&&x.status==='done')||(filter==='failed'&&x.status==='failed')||(filter==='mismatch'&&x.status==='done'&&!x.matches_reference)||(filter==='violation'&&x.status==='done'&&x.verdict==='violation'));
@@ -109,7 +113,7 @@ function renderExamples(){
   }
   card.append(text('p','Разметка: '+(item.expected_violation?'есть нарушение':'без нарушения')+(item.expected_timestamp_sec!=null?` · ${format(item.expected_timestamp_sec)}`:''),'reference'));
   if(item.status==='done'){
-   card.append(text('p','Модель: '+(item.verdict==='violation'?`найдены признаки (${item.violation_count})`:'признаки не обнаружены'),'model-answer'));
+   card.append(text('p','Qwen3.6: '+(item.verdict==='violation'?`найдены признаки (${item.violation_count})`:'признаки не обнаружены'),'model-answer'));
    card.append(text('p',item.matches_reference?'Совпадает с разметкой':'Расхождение с разметкой',item.matches_reference?'comparison match':'comparison mismatch'));
    card.append(text('p',`Обработка: ${Math.round(item.elapsed_sec)} сек`,'small'));
    const open=text('button','Открыть результат проверки ↗');open.onclick=()=>openExample(item);card.append(open);

@@ -1,97 +1,539 @@
 {
-  "version": "2026-10-17.events.1",
+  "version": "2026.10.18-final.1",
   "source": {
-    "title": "Правила осуществления кассовых операций, постановление Правления НБРК от 29.11.2019 № 231",
+    "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
     "url": "https://adilet.zan.kz/rus/docs/V1900019680",
-    "retrieved_from": "https://old.adilet.zan.kz/rus/docs/V1900019680",
-    "retrieved_on": "2026-10-17",
-    "scope": "Банки второго уровня Республики Казахстан; применимость каждого пункта зависит от вида операции"
+    "snapshot": "docs/regulatory-source-231.txt",
+    "retrieved_on": "2026-10-17"
   },
   "rules": [
     {
-      "id": "personal_items",
-      "name": "Личные вещи в кассовом узле",
-      "clause": "п. 12",
+      "id": "recount_after_partial_return_missing",
+      "name": "Нет контрольного пересчёта остатка",
       "enabled": true,
-      "requirement": "Личные вещи, деньги и ценности работников хранятся вне кассового узла.",
-      "visible_test": "Однозначно личная сумка, кошелек или иной личный предмет кассира находится внутри кассовой рабочей зоны; видна связь предмета с кассиром.",
-      "exceptions": "Разрешены лекарства, медицинские изделия и средства связи без фото/видеофиксации. Документы и рабочее оборудование не являются личными вещами. Принадлежность предмета нельзя выводить только по месту нахождения."
+      "clause": "пп. 19(2), 20",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Cash received and counted; some banknotes returned to client; remainder accepted/stored or transaction finished without a visible control recount. Require visibility of the full relevant interval; missing sampled action alone is not proof.",
+      "visible_test": {
+        "P1": "Customer cash was received and counted, then a part of that same cash was returned to that customer.",
+        "P2": "The remaining cash was accepted/stored or that transaction finished.",
+        "P3": "The complete relevant interval is visible and the remaining cash was NOT recounted before acceptance/completion. A sampled missing gesture is unknown, not supported."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
     },
     {
-      "id": "cash_to_personal_storage",
-      "name": "Перемещение наличных в личные вещи",
-      "clause": "пп. 12, 20",
+      "id": "identity_check_missing",
+      "name": "Нет предварительной идентификации",
       "enabled": true,
-      "requirement": "Личные деньги и вещи хранятся вне кассового узла; ранее принятые деньги хранятся в специальных устройствах.",
-      "visible_test": "Видна непрерывная передача банкнот с рабочего стола кассира в его карман или личную сумку.",
-      "exceptions": "Не называть это кражей. Не путать служебный лоток или банковскую сумку для инкассации с личной сумкой. Не делать вывод, если предмет неразличим."
-    },
-    {
-      "id": "cashier_leaves",
-      "name": "Уход до завершения обслуживания клиента",
-      "clause": "п. 22",
-      "enabled": true,
-      "requirement": "Кассовый работник не покидает рабочее место до окончания обслуживания клиента.",
-      "visible_test": "Видно, как кассир покидает рабочую зону во время незавершенной операции приема наличных; клиент и операция остаются у кассы.",
-      "exceptions": "Пункт относится к приему наличных. Наклон к ящику, поворот, движение в пределах рабочего места и уход после завершения обслуживания не являются этим событием."
-    },
-    {
-      "id": "count_without_customer",
-      "name": "Пересчет в отсутствие клиента",
-      "clause": "п. 20",
-      "enabled": true,
-      "requirement": "Прием и пересчет наличных производятся в присутствии клиента.",
-      "visible_test": "Последовательность показывает прием денег конкретного клиента, уход клиента и последующий пересчет этих денег кассиром.",
-      "exceptions": "Не относить к правилу внутреннюю сверку кассы или пересчет инкассированных денег. Не считать клиента отсутствующим только потому, что он вне границ кадра."
+      "clause": "п. 19(1)",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "Receipt starts without an identity check by physical OR digital document. Require the visible beginning and sufficient opportunity; document handover alone is not proof of identity check, and a cropped start is unknown.",
+      "visible_test": {
+        "P1": "The beginning of a customer cash receipt operation is visible.",
+        "P2": "Over the complete visible identification opportunity BEFORE receipt, neither a physical NOR digital identity verification occurs. A start outside the clip or unreadable identity procedure is unknown."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
     },
     {
       "id": "previous_cash_unsecured",
-      "name": "Ранее принятые деньги вне устройства хранения",
-      "clause": "п. 20",
+      "name": "Деньги предыдущего клиента не убраны",
       "enabled": true,
-      "requirement": "На рабочем месте находятся деньги текущего клиента; ранее принятые деньги хранятся в закрывающихся на ключ устройствах.",
-      "visible_test": "Завершена первая операция приема, начинается следующая, а ранее принятые деньги явно остаются вне устройства хранения или смешиваются с новыми.",
-      "exceptions": "Нельзя определить принадлежность банкнот по одному кадру. Наличие наличных на столе во время текущей операции само по себе допустимо. Закрытый ящик не доказывает отсутствие замка."
+      "clause": "п. 20",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "An earlier customer cash receipt completes; their cash remains outside lockable storage when the next customer operation begins. Track the earlier cash and actual customer change; ordinary current-operation cash on a desk is allowed.",
+      "visible_test": {
+        "P1": "Two successive customer operations are supported, with the earlier customer cash provenance tracked.",
+        "P2": "The earlier operation ends before the next operation starts.",
+        "P3": "That earlier cash remains outside secured storage when the next customer operation starts."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
     },
     {
-      "id": "deposit_without_count",
-      "name": "Прием без наблюдаемого пересчета",
-      "clause": "п. 19 подп. 2",
-      "enabled": false,
-      "requirement": "При приеме банкноты пересчитываются полистно, монеты по кружкам с проверкой подлинности и платежности.",
-      "visible_test": "Вся короткая операция приема видна непрерывно: банкноты приняты и убраны без ручного или машинного пересчета.",
-      "exceptions": "Пропущенные между кадрами действия, невидимый счетчик и начало операции вне видео исключают надежный вывод. Нельзя утверждать, что машина не проверяет подлинность.",
-      "disabled_reason": "Sparse-frame absence cannot establish an omitted action; requires validated dense evidence."
+      "id": "workstation_unlocked_unattended",
+      "name": "Компьютер оставлен без блокировки",
+      "enabled": true,
+      "clause": "Требования информационной безопасности, контекст рабочего места",
+      "source": {
+        "title": "Требования по обеспечению информационной безопасности банков, АРРФР №53 от 03.04.2026",
+        "url": "https://adilet.zan.kz/rus/docs/V2600038336",
+        "verification": "Ссылка на документ; применимость к наблюдаемому рабочему месту требует проверки."
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Cashier leaves and a readable working application/session remains accessible. A lit display alone does not distinguish a lock screen from an application; do not invent unreadable screen contents.",
+      "visible_test": {
+        "P1": "The cashier visibly leaves the workstation.",
+        "P2": "AFTER departure, a readable working application or active unlocked work session is directly distinguishable on the screen. Lit display, open laptop lid or absence of a visible locking gesture are NOT proof. If screen contents are unreadable, this fact MUST be unknown."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
     },
     {
-      "id": "payout_without_count",
-      "name": "Выдача без наблюдаемого пересчета",
-      "clause": "п. 31 подп. 4; п. 32",
-      "enabled": false,
-      "requirement": "Подготовленные деньги пересчитываются в присутствии клиента перед выдачей, с исключениями для неповрежденной упаковки.",
-      "visible_test": "Вся выдача явно неупакованных отдельных банкнот видна без ручного или машинного пересчета.",
-      "exceptions": "Пункт 32 разрешает выдачу пачек и отдельных корешков без полистного пересчета при сохранении неповрежденной упаковки. Упакованные монеты также имеют исключения. Не считать отсутствие видимого счетчика нарушением.",
-      "disabled_reason": "Sparse-frame absence cannot establish an omitted action; requires validated dense evidence."
+      "id": "safe_accessible_to_clients",
+      "name": "Сейф находится в клиентской зоне",
+      "enabled": true,
+      "clause": "п. 5; требования к устройству кассового узла",
+      "source": {
+        "title": "Правила организации охраны и устройства помещений, НБРК №14 от 24.02.2020",
+        "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+        "verification": "Контекст требований к помещению; отдельный пункт по видео автоматически не устанавливается."
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Safe containing or used for cash is in the accessible customer side of the service layout. Establish intended cashier/client sides independently of where a person temporarily sits. Door-facing direction or an arbitrary chair does not establish an intended zone. Require independent visible evidence of the functional service boundary/access path; if ambiguous, keep this candidate unconfirmed.",
+      "visible_test": {
+        "P1": "A visible object is identified as the cash safe, based on use/visible structure.",
+        "P2": "The intended customer-accessible side is independently established from functional layout/service boundary, not seat or door-facing direction.",
+        "P3": "The cash safe is physically reachable from that customer side without crossing a secured functional boundary."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
     },
     {
-      "id": "bag_inspection_omitted",
-      "name": "Прием инкассаторской сумки без видимой проверки",
-      "clause": "п. 24 подп. 3–4",
-      "enabled": false,
-      "requirement": "При приеме инкассаторской сумки кассир проверяет целостность и правильность пломбирования.",
-      "visible_test": "Полная короткая передача сумки инкассатором видна, и кассир убирает ее без осмотра сумки и пломбы.",
-      "exceptions": "Осмотр может быть быстрым и визуальным; не требовать специального жеста. Частичная видимость, непонятный тип сумки или разрывы выборки не доказывают пропуск.",
-      "disabled_reason": "Sparse-frame absence cannot establish an omitted action; requires validated dense evidence."
+      "id": "cashier_area_access_unsecured",
+      "name": "Кассовая зона оставлена доступной",
+      "enabled": true,
+      "clause": "пп. 14, 80; применимость к входу требует проверки",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Cashier leaves the cash area and its cash storage/workstation accessible to visitors, with observed unsecured entrance/access. Do not equate an unseen locking gesture with an unlocked door.",
+      "visible_test": {
+        "P1": "The cashier visibly leaves the cash area.",
+        "P2": "After departure an entrance/barrier is directly seen to permit unsecured access; no locking gesture being observed is insufficient.",
+        "P3": "Through that observed accessible entrance, visitors can physically reach the cash workspace/storage."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
     },
     {
-      "id": "damaged_bag_no_recount",
-      "name": "Прием поврежденной сумки без пересчета",
-      "clause": "п. 25",
-      "enabled": false,
-      "requirement": "При нарушенной целостности сумку вскрывают и пересчитывают содержимое в присутствии инкассатора.",
-      "visible_test": "Явное повреждение сумки и завершенная передача видны; содержимое не пересчитано, инкассатор уходит.",
-      "exceptions": "Не выводить повреждение по складкам или обычному замку. Все существенные части процедуры должны быть видны.",
-      "disabled_reason": "Sparse-frame absence cannot establish an omitted action; requires validated dense evidence."
+      "id": "collection_bag_inspection_missing",
+      "name": "Сумка принята без осмотра",
+      "enabled": true,
+      "clause": "п. 24(3–4)",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "A bag with bank valuables is received then stored without visible inspection of packaging/lock/seal over the complete visible handover. Do not confuse a personal bag or infer a skipped inspection across unobserved intervals.",
+      "visible_test": {
+        "P1": "A bank-valuable collection bag, not a personal bag, is visibly received.",
+        "P2": "That received bag is then put into storage.",
+        "P3": "Across the completely visible relevant handover-to-storage interval, the required packaging/lock/seal inspection is visibly skipped. Unobserved intervals make this unknown."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "concurrent_customer_operations",
+      "name": "Перекрытие операций клиентов",
+      "enabled": true,
+      "clause": "пп. 20–22",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "A second customer money/document operation begins while the first customer operation is still unfinished. Two people in the room or a companion alone do not establish two transactions.",
+      "visible_test": {
+        "P1": "Two separate customer money/document operations, not companions or internal work, are visibly established.",
+        "P2": "The second operation begins while the first operation is visibly unfinished."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
+    },
+    {
+      "id": "safe_left_open",
+      "name": "Сейф оставлен открытым",
+      "enabled": true,
+      "clause": "пп. 20, 80",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Cash is removed from the safe, cashier returns to other work, and the safe door visibly remains open. A briefly opened safe during active access alone is ordinary.",
+      "visible_test": {
+        "P1": "The cashier visibly removes cash from the safe.",
+        "P2": "The cashier finishes that safe access and returns to unrelated work or leaves.",
+        "P3": "After that safe-access completion, the same safe door visibly remains open. Brief active access alone is not a violation."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "safe_key_unattended",
+      "name": "Ключ от сейфа оставлен без присмотра",
+      "enabled": true,
+      "clause": "п. 80",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Пункт 80 требует исключить несанкционированное использование ключей и отсылает к внутренним документам. Сам по себе этот пункт не является прямой формулировкой запрета оставлять ключ в замке.",
+      "requirement": "Cashier visibly handles a safe key, leaves it on the safe/accessible surface, and leaves without taking/securing it. A small unidentified object, a hand gesture, or an invisible key is insufficient.",
+      "visible_test": {
+        "P1": "An identifiable key associated with the safe is directly visible, not just an unidentified small object or lock/hand gesture.",
+        "P2": "The cashier places/leaves that safe key on an unsecured accessible surface.",
+        "P3": "The cashier subsequently leaves and that same key visibly remains there without being retrieved or secured; retain the object continuity."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "safe_key_left_in_lock",
+      "name": "Ключ оставлен в замке сейфа",
+      "enabled": true,
+      "clause": "п. 80",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Пункт 80 требует исключить несанкционированное использование ключей и отсылает к внутренним документам. Сам по себе этот пункт не является прямой формулировкой запрета оставлять ключ в замке.",
+      "requirement": "Key is visibly left inserted in the safe lock after safe work ends and cashier switches to other work/leaves. Do not infer a key solely from a lock-shaped dark spot or a prior window with no visible key.",
+      "visible_test": {
+        "P1": "An identifiable key is directly visible inserted in the safe lock. A dark lock spot or hand gesture alone is unknown.",
+        "P2": "Safe work ends and the cashier switches to other work OR leaves.",
+        "P3": "After that transition the same key visibly remains inserted in the lock."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "cash_left_unattended",
+      "name": "Наличные оставлены без присмотра",
+      "enabled": true,
+      "clause": "пп. 14, 20, 80",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Cashier leaves the room/workplace while identifiable banknotes remain on the desk outside secured storage. Client absence alone does not establish cashier absence.",
+      "visible_test": {
+        "P1": "The cashier visibly leaves the room/workplace, rather than just a client leaving.",
+        "P2": "After that departure identifiable banknotes remain on the desk outside secured storage."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
+    },
+    {
+      "id": "client_in_cashier_zone",
+      "name": "Клиент вошёл в рабочую зону",
+      "enabled": true,
+      "clause": "пп. 5, 14; требования к доступу",
+      "source": {
+        "title": "Правила организации охраны и устройства помещений, НБРК №14 от 24.02.2020",
+        "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+        "verification": "Контекст требований к помещению; отдельный пункт по видео автоматически не устанавливается."
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "An identified client moves behind the cashier or onto the cashier side with direct access to cash equipment. A reflection is not another person; a cashier changing position is not client intrusion. Door-facing direction or an arbitrary chair does not establish an intended zone. Require independent visible evidence of the functional service boundary/access path; if ambiguous, keep this candidate unconfirmed.",
+      "visible_test": {
+        "P1": "The moving person is independently identified as a customer from their operational behavior, not appearance or seat.",
+        "P2": "The intended cashier side is independently established from the functional service boundary/equipment layout.",
+        "P3": "That customer crosses into that cashier side or behind the cashier with direct access to cash equipment."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "zones_not_separated",
+      "name": "Не разделены кассовая и клиентская зоны",
+      "enabled": true,
+      "clause": "п. 5; требования к устройству кассового узла",
+      "source": {
+        "title": "Правила организации охраны и устройства помещений, НБРК №14 от 24.02.2020",
+        "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+        "verification": "Контекст требований к помещению; отдельный пункт по видео автоматически не устанавливается."
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "Layout permits incoming visitors direct passage behind cashier to cash equipment/safe without a separating barrier. Merely sharing one room is not sufficient; identify actual access path and intended zones. Door-facing direction or an arbitrary chair does not establish an intended zone. Require independent visible evidence of the functional service boundary/access path; if ambiguous, keep this candidate unconfirmed.",
+      "visible_test": {
+        "P1": "An intended cashier/customer functional boundary and cash equipment/access path are independently established.",
+        "P2": "The visible layout permits visitors direct passage behind the cashier to cash equipment/safe without a separating barrier."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
+    },
+    {
+      "id": "cashier_works_client_side",
+      "name": "Кассир работает со стороны клиента",
+      "enabled": true,
+      "clause": "пп. 5, 14; функциональная организация кассы",
+      "source": {
+        "title": "Правила организации охраны и устройства помещений, НБРК №14 от 24.02.2020",
+        "url": "https://adilet.zan.kz/rus/docs/V2000020075",
+        "verification": "Контекст требований к помещению; отдельный пункт по видео автоматически не устанавливается."
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "The same cashier occupies the intended customer seat/side and handles cash or equipment there while the intended cashier workplace remains unused. Role follows the person, not the chair. Door-facing direction or an arbitrary chair does not establish an intended zone. Require independent visible evidence of the functional service boundary/access path; if ambiguous, keep this candidate unconfirmed.",
+      "visible_test": {
+        "P1": "The same operator is independently identified as cashier by responsibility for bank operations.",
+        "P2": "The intended customer side/seat is independently established from service layout, not orientation or arbitrary chair.",
+        "P3": "That cashier performs cash/equipment work from that customer side while the intended cashier workplace is unused."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "count_without_customer",
+      "name": "Пересчёт денег клиента без клиента",
+      "enabled": true,
+      "clause": "п. 20",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "Customer cash is being received/counted while that customer has left/is visibly absent. Link cash to customer receipt. Internal safe cash inventory/counting alone with no customer transaction is ordinary.",
+      "visible_test": {
+        "P1": "The counted/received cash is linked to a visible customer receipt operation, not internal inventory or own money.",
+        "P2": "The cashier receives/counts that customer cash.",
+        "P3": "At that same receipt/counting interval the corresponding customer has visibly left or is visibly absent."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "clients_cash_not_separated",
+      "name": "Наличные разных клиентов не разделены",
+      "enabled": true,
+      "clause": "п. 20",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "Old customer cash stays on desk and new customer cash is placed beside it before old cash is secured. Require two supported customer transactions and separate cash provenance, not an arbitrary split of one customer pile.",
+      "visible_test": {
+        "P1": "Two distinct customer cash transactions and the provenance of their separate funds are visibly established; two companions or one split pile do not suffice.",
+        "P2": "The earlier customer cash remains on the work surface outside secured storage when the newer operation begins.",
+        "P3": "New customer cash is placed beside that earlier cash before the earlier cash is secured; physical combining is NOT required."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "clients_cash_mixed",
+      "name": "Смешаны деньги разных клиентов",
+      "enabled": true,
+      "clause": "п. 20",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "Cash from two supported customer transactions is physically combined in one pile. Require ownership continuity and observed combining; adjacent piles alone are not mixing.",
+      "visible_test": {
+        "P1": "Cash from two distinct supported customer transactions has separate established provenance.",
+        "P2": "Those funds are visibly physically combined into one pile; adjacent distinct piles alone are insufficient."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2"
+        ]
+      }
+    },
+    {
+      "id": "personal_items",
+      "name": "Личные вещи на рабочей поверхности",
+      "enabled": true,
+      "clause": "п. 12",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "direct_with_applicability",
+      "interpretation_note": "",
+      "requirement": "Cashier places identifiable personal bag/outerwear on cash working surface. Track possession by cashier. A customer coat, collection bag, work tray, or mere proximity is insufficient.",
+      "visible_test": {
+        "P1": "The owner/handler of the item is the cashier, supported by the same person continuing operational work. A single operator can be cashier without a customer; changing clothing/seat does not change role.",
+        "P2": "An identifiable personal outerwear item of that cashier is placed OR rests on the cash working surface at some visible point. Evaluate the coat alone: absence/location/timing of a bag CANNOT negate this fact.",
+        "P3": "An identifiable personal bag of that cashier is placed OR rests on the cash working surface at some visible point. Evaluate the bag alone: absence/location/timing of a coat CANNOT negate this fact."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          {
+            "any": [
+              "P2",
+              "P3"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cash_unsecured_during_personal_activity",
+      "name": "Деньги оставлены при личных действиях",
+      "enabled": true,
+      "clause": "пп. 14, 20; операционная интерпретация",
+      "source": {
+        "title": "Правила осуществления кассовых операций и операций по инкассации, НБРК №231 от 29.11.2019",
+        "url": "https://adilet.zan.kz/rus/docs/V1900019680",
+        "snapshot": "docs/regulatory-source-231.txt",
+        "retrieved_on": "2026-10-17"
+      },
+      "mapping": "operational_interpretation",
+      "interpretation_note": "Операционное сопоставление: источник задаёт общие требования; применимость конкретной обязанности и внутреннего порядка нужно проверить.",
+      "requirement": "After counting, cashier leaves banknotes unsecured on desk and switches to an unrelated personal activity such as drinking. Establish the operation transition and money location, not just the presence of a cup.",
+      "visible_test": {
+        "P1": "The cashier has visibly finished counting identifiable banknotes.",
+        "P2": "Those same banknotes remain unsecured on the desk.",
+        "P3": "While those banknotes remain unsecured, the cashier switches to unrelated personal activity, such as drinking, rather than continued bank operation."
+      },
+      "formula": {
+        "all": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
     }
-  ]
+  ],
+  "limitation": "Источники не превращают визуальное предположение в установленное нарушение закона. Точные юридические выводы не автоматизируются."
 }

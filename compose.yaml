@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports: ["127.0.0.1:9017:9017"]
+    env_file: .env
+    environment:
+      CASHGUARD_DATA: /srv/cashguard/runtime
+      CASHGUARD_EXAMPLES: /srv/cashguard/examples
+      CASHGUARD_API_KEY_FILE: /run/secrets/jury-api.key
+      MODEL_API_KEY_FILE: /run/secrets/model-api.key
+    volumes:
+      - ./runtime:/srv/cashguard/runtime
+      - ./examples:/srv/cashguard/examples:ro
+      - ./private/jury-api.key:/run/secrets/jury-api.key:ro
+      - ./private/model-api.key:/run/secrets/model-api.key:ro

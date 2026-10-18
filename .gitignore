@@ -34,3 +34,9 @@ logs/
 *.onnx
 *.bin
 *.npz
+private/
+outputs/
+*.xlsx
+*.zip
+*.tar
+*.tar.gz

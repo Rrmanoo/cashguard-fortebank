@@ -1,13 +1,19 @@
 import json
 import sqlite3
+from contextlib import contextmanager
 import time
 from .config import DATA
 
+@contextmanager
 def connect():
     DATA.mkdir(parents=True,exist_ok=True,mode=0o700)
     c=sqlite3.connect(DATA/'jobs.sqlite',timeout=10)
     c.row_factory=sqlite3.Row
-    return c
+    try:
+        with c:
+            yield c
+    finally:
+        c.close()
 
 def init():
     with connect() as c:

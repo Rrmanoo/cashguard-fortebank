@@ -1,20 +1,32 @@
-[
-  {
-    "repo": "Qwen/Qwen3-VL-8B-Instruct",
-    "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
-    "path": "models/qwen3-vl-8b",
-    "license": "apache-2.0"
+{
+  "active": {
+    "name": "Qwen3.6-35B-A3B FP8",
+    "served_alias": "qwen",
+    "weights_directory_basename": "qwen36-fp8",
+    "revision": null,
+    "revision_note": "Existing team deployment; exact weight revision not certified by API alias. Save config and revision from GPU host before migration.",
+    "max_model_len": 32768,
+    "precision": "FP8 weights; backend deployment metadata",
+    "thinking": false
   },
-  {
-    "repo": "PekingU/rtdetr_v2_r50vd",
-    "revision": "282494075698cab9faa1096ae26856890030c817",
-    "path": "models/rtdetr-v2",
-    "license": "apache-2.0"
-  },
-  {
-    "repo": "IDEA-Research/grounding-dino-tiny",
-    "revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
-    "path": "models/grounding-dino",
-    "license": "apache-2.0"
-  }
-]
+  "historical_unused_by_current_app": [
+    {
+      "repo": "Qwen/Qwen3-VL-8B-Instruct",
+      "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "path": "models/qwen3-vl-8b",
+      "license": "apache-2.0"
+    },
+    {
+      "repo": "PekingU/rtdetr_v2_r50vd",
+      "revision": "282494075698cab9faa1096ae26856890030c817",
+      "path": "models/rtdetr-v2",
+      "license": "apache-2.0"
+    },
+    {
+      "repo": "IDEA-Research/grounding-dino-tiny",
+      "revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+      "path": "models/grounding-dino",
+      "license": "apache-2.0"
+    }
+  ]
+}

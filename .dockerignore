@@ -1,0 +1,15 @@
+.git
+private
+.env
+runtime
+examples
+models
+data
+outputs
+*.key
+*.pem
+*.mov
+*.mp4
+*.jpg
+__pycache__
+.venv

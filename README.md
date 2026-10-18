@@ -1,94 +1,113 @@
-# CashGuard
+# CashGuard · ForteBank Datathon 2026
 
-Baseline cashier-video review service for the ForteBank Datathon 26 case. A local vision pipeline proposes observable events, applies a fixed rule catalog and returns timestamps, evidence frames and references for human review. The repository preserves the currently deployed event-first algorithm before detection-quality improvements.
+Анализ видеозаписей кассовых операций: журнал действий, проверка 20 критериев, таймкоды, 1–3 кадра-доказательства и ссылки на нормативные источники Казахстана. Финальная архитектура `2026.10.18-final.1`: только Qwen3.6 на GPU команды, приложение и интерфейс на CPU.
 
-**Current detection quality is inadequate.** The latest private development run completed all 42 clips but detected none of the 22 positive cases: TP 0, TN 20, FP 0, FN 22. Median end-to-end API latency was 36.30 seconds and maximum latency was 148.94 seconds. These are development-set measurements, not unseen-video validation. The private recordings, labels, predictions, descriptions, evidence images and weights are not included in this repository.
+## Демо и сдача
 
-## Pipeline
+* Интерфейс: **https://luther-huggable-subaxially.ngrok-free.dev/**
+* Закрытые учебные примеры: **https://luther-huggable-subaxially.ngrok-free.dev/examples**
+* API: **https://luther-huggable-subaxially.ngrok-free.dev/api/v1**
+* Интерактивная документация: **https://luther-huggable-subaxially.ngrok-free.dev/docs**
+* Репозиторий: https://github.com/Rrmanoo/cashguard-fortebank
 
-1. PyAV decodes the recording and samples full-resolution frames at 2.5 fps.
-2. RT-DETRv2-R50 and ByteTrack detect and track people.
-3. Grounding DINO Tiny proposes desk, safe, doorway and object regions.
-4. RTMPose provides hand cues using ONNX Runtime on the CPU.
-5. Qwen3-VL-8B-Instruct BF16 annotates overlapping seven-frame windows through a local vLLM endpoint, with up to four simultaneous requests.
-6. Event normalization and deterministic rules decide whether to emit a finding. YuNet blurs detected faces in returned evidence; it does not identify people.
+Жюри получает отдельный ключ `X-API-Key` от команды. Ключи, видео, кадры, ответы с данными и исходная аннотация не публикуются. В интерфейсе введите выданный ключ, выберите MOV, нажмите «Проверить запись». Или откройте сохранённый пример и сравните модель с отдельно показанной исходной разметкой.
 
-No task-specific fine-tuning is present in this baseline. The source archive generalizes deployment paths and launch commands; the event prompts, sampling, thresholds and rule logic are retained.
+Сервис должен оставаться запущен на CPU и GPU; ngrok требует Интернет. Это действующее демо с собственной моделью, а не доказательство автономной работы. Для окончательной сдачи, требующей обработки без Интернета, необходим локальный или частный LAN доступ к vLLM. Этот профиль описан ниже; отключение Интернета в текущем двухсерверном демо не тестировалось.
 
-## Requirements
+## Результаты
 
-Use a Linux NVIDIA CUDA environment. The original deployment uses physical GPU 1 and the perception code deliberately rejects another `CUDA_VISIBLE_DEVICES` setting. GPU 0 belongs to other workloads in that deployment. Review this isolation guard explicitly before adapting to a different machine.
+Полный прогон финальной версии публикуется в `benchmarks/final/metrics.json` и [отчёте](docs/submission/evaluation.md). До завершения прогона численные результаты не заявляются. В выборке 42 файла: 22 положительных, 20 отрицательных; 40 уникальных по SHA-256. Две пары дубликатов не считаются независимыми наблюдениями. Метрики показываются для обоих способов подсчёта.
 
-`requirements.txt` contains the API dependencies. `requirements-inference.txt` records the observed inference package versions; it is not a clean-install lockfile. Select compatible CUDA, PyTorch and vLLM builds for the target host. FFmpeg and ffprobe are required for example previews and inspection.
+Recall = TP / все положительные ролики; сбои не исключаются из основного знаменателя. Отдельно: Precision, F1, Accuracy, specificity, матрица ошибок, совпадение с основными типами аннотации, ошибки обработки, время всего прогона и длительность видео. Дополнительные типы на положительных видео не имеют исчерпывающей разметки, поэтому полноценные multilabel precision/F1 не заявляются.
 
-Provision pretrained weights before enabling offline execution. Repository names and pinned revisions are recorded in `docs/models.json`; auxiliary ONNX download URLs and checksums are in `docs/aux-models.json`. Expected folders/files are:
+Критерии и промпты разрабатывались по этим видео. Результаты — development benchmark, **не независимый тест** и не обещание точности на видео жюри. Сравнение с константой «всегда нарушение» обязательно: она даёт Recall 100%, Accuracy 52,38% и Precision 52,38% на 42 файлах.
 
-```text
-models/
-  qwen3-vl-8b/
-  rtdetr-v2/
-  grounding-dino/
-  rtmpose-m-wholebody.onnx
-  yunet.onnx
+## Как работает
+
+1. Проверка MOV и извлечение реальных PTS; обзор 2,5 кадра/с, детали 5 кадров/с.
+2. Карта сцены и функциональные роли. Положение относительно двери не определяет кассира.
+3. Журнал действий по перекрывающимся последовательностям из 7 кадров. Внутренний пересчёт отделяется от операции с клиентом.
+4. Выбор моментов по журналу всего видео; проверка каждого из 20 критериев по полным кадрам и крупным планам до/во время/после.
+5. Qwen возвращает наблюдаемые факты и ссылки на ID кадров. Фиксированные AND/OR вычисляет код; неразличимое остаётся `unknown`.
+6. Два API verdict, подтверждённые типы с доказательствами, неизвестные критерии отдельно для ручной проверки.
+
+Qwen: `temperature=0`, `seed=17`, `enable_thinking=false`; до 4 запросов параллельно. Нет отдельного свободного «финального мнения», способного придумать новые условия. YOLO/pose/face recognition в финальном пути отсутствуют. Подробнее: [архитектура](docs/submission/architecture.md), [20 типов](docs/submission/types.md), [нормативные источники и применимость](docs/submission/regulatory-sources.md).
+
+## Запуск CPU приложения
+
+Требуются Python 3.12/3.13, FFmpeg/ffprobe и доступ к модели команды (OpenAI-совместимый `/v1`, 16 изображений в запросе, контекст ≥32768, строгая JSON Schema).
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python scripts/create-jury-key.py
+cp .env.example .env
+# В .env укажите свои абсолютные пути и модельный endpoint.
+# Модельный ключ сохраните отдельно в private/model-api.key (chmod 600).
+set -a; source .env; set +a
+PYTHON_BIN="$PWD/.venv/bin/python" bash scripts/serve-app.sh
 ```
 
-The RTMPose model must be extracted from the listed archive and saved under the expected filename. Model licenses remain applicable independently of this repository; the ByteTrack MIT notice is in `licenses/`.
+Открыть http://127.0.0.1:9017/. Запускать **один uvicorn worker**: он владеет допуском одного видео одновременно. Не запускайте несколько копий с одним runtime. Приложение не загружает веса и не выбирает другие AI сервисы при сбое.
 
-## Start
+`.env` не читает приложение автоматически: загрузите его через shell или EnvironmentFile systemd. `MODEL_ALLOWED_HOSTS` должен точно совпадать с hostname HTTPS endpoint; редиректы не разрешены. Токен модели читается из файла, не из браузера. Для localhost API без ключа оставьте `MODEL_API_KEY_FILE` пустым.
 
-From the repository root, create a private key file without printing the key:
+### Локальный GPU / LAN без AI облака
 
-```sh
-python -c 'import os,secrets; fd=os.open("api.key",os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); os.write(fd,secrets.token_urlsafe(32).encode()); os.close(fd)'
-bash scripts/serve-model.sh
+На GPU хосте заранее установите совместимую с весами версию vLLM, сами веса и зависимости. Существующее развёртывание использует Qwen3.6-35B-A3B FP8, alias `qwen`; ревизия весов должна фиксироваться оператором. `docs/models.json` содержит также исторические модели, которые не используются приложением.
+
+```bash
+MODEL_PATH=/absolute/path/to/qwen36-fp8 CUDA_VISIBLE_DEVICES=0 bash scripts/serve-model.sh
+# На том же GPU хосте CPU приложение:
+export MODEL_URL=http://127.0.0.1:9003/v1 MODEL_NAME=qwen
+export MODEL_API_KEY_FILE=''
 ```
 
-After the model health endpoint on port 9016 is ready, start the web app in a second terminal:
+Скрипт модели включает offline flags и слушает loopback. Не меняйте GPU shared-сервиса без разрешения его владельца. Резерв памяти необходимо подобрать по фактически свободной VRAM. Для CPU и GPU в одной частной сети используйте закрытый аутентифицированный gateway и явно задайте `MODEL_ALLOWED_HOSTS`; HTTP допускается только при `MODEL_ALLOW_PRIVATE_HTTP=1`. В публичной сети используйте HTTPS с авторизацией. Порты vLLM напрямую в Интернет не выставляются. Совместимость с новым окружением/GPU требует отдельной проверки.
 
-```sh
-bash scripts/serve-app.sh
-```
+### Docker
 
-The app is at `http://127.0.0.1:9017`; the gallery is at `/examples`. `PYTHON_BIN`, `VLLM_BIN`, `MODEL_PATH`, `CASHGUARD_MODELS`, `CASHGUARD_DATA`, `CASHGUARD_EXAMPLES` and `CASHGUARD_API_KEY_FILE` can override deployment locations. The model URL must remain loopback. Inference must not send recordings, frames or scene descriptions to cloud AI services.
+`Dockerfile`/`compose.yaml` упаковывают CPU приложение. Заполните `.env`, создайте `private/jury-api.key`, `private/model-api.key`, каталоги `runtime`/`examples`; runtime должен быть доступен UID 10001. Затем `docker compose up -d --build`. Модель запускается отдельно. Docker-профиль подготовлен, его сборка в текущем окружении не проверялась.
 
 ## API
 
-All `/api/v1` endpoints require `X-API-Key` or the browser's signed twelve-hour session. Signing in does not store the API key in browser storage.
-
-- `POST /api/v1/analyze`: multipart MOV in field `file`, returning `job_id`.
-- `GET /api/v1/jobs/{job_id}`: processing status and completed result.
-- `GET /api/v1/rules`: catalog and enabled/disabled rules.
-- `GET /api/v1/examples`: saved example summaries.
-- `GET /api/v1/examples/{id}`: saved result.
-- `GET /api/v1/examples/{id}/video`: authenticated MP4 preview with range support.
-- `POST /api/v1/session`: create a browser session after authentication.
-- `GET /healthz`: model availability and current admission state.
-
-The service accepts one video at a time. An occupied worker returns HTTP 429. Uploads are limited to 128 MB and 180 seconds; analysis has a 270-second subprocess deadline. Failures stay failed rather than becoming negative findings.
-
-## Private examples and evaluation
-
-Supply your own authorized data under `data/videos/` and a private `data/labels.json` list with `filename`, `violation` and `timestamp_sec` fields. The reference labels are used for comparison only and are not passed to inference.
-
-```sh
-python scripts/run-examples.py
-python scripts/evaluate.py --labels data/labels.json --videos data/videos --key-file api.key --output evaluation/results.json
+```bash
+export CASHGUARD_URL=https://luther-huggable-subaxially.ngrok-free.dev
+read -rs JURY_KEY; export JURY_KEY
+curl -sS "$CASHGUARD_URL/api/v1/analyze" -H "X-API-Key: $JURY_KEY" \
+  -F 'file=@example.mov;type=video/quicktime'
+curl -sS "$CASHGUARD_URL/api/v1/jobs/JOB_ID" -H "X-API-Key: $JURY_KEY"
 ```
 
-`CASHGUARD_BASE` overrides the example runner's root. Saved example results and silent H.264 previews live under `examples/`, independently of ordinary expiring jobs. The gallery offers inline players and reference/model comparisons. Recordings and outputs remain private and must follow the dataset's retention terms.
+POST возвращает 202 и `job_id`. GET: `processing`, `done` или `failed`. Результат `done` содержит `verdict: violation | no_violation`, `violations[]`: тип, таймкод, описание, JPEG base64 и источник. [Контракт и коды ошибок](docs/submission/api.md).
 
-`tools/local-viewer.mjs` is an optional laptop-only viewer. It expects a private tunnel on local port 9019 to forward to the protected server application, and a temporary `tools/access.key` containing the existing server key. It binds only `127.0.0.1:9017`, injects authentication for local API requests, renders the examples into initial HTML and removes the temporary key after startup. It does not make the server API public. Stop any existing listener on local port 9017 before starting this viewer.
+Максимум 128 MiB, 180 секунд. Повторный запрос при занятом обработчике — 429. Timeout 270 секунд — `failed`; правило кейса о 5 минутах проверяется по фактическому времени, не гарантируется наличием timeout. Исходные загрузки удаляются после обработки; результаты — через 24 часа. Учебная галерея сохраняется отдельно и защищена тем же ключом.
 
-```sh
-node tools/local-viewer.mjs
+## Воспроизведение benchmark
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+# Экспортировать те же MODEL_* и FRAME_MAX_EDGE=1024, что у сервиса.
+.venv/bin/python tools/benchmark_dataset.py \
+  --videos /private/path/videos --labels /private/path/open_labels_annotation.xlsx \
+  --output /private/path/final-benchmark --concurrency 2 --deadline 270 \
+  --type-map /private/path/evaluation-type-map.json
 ```
 
-The earlier `scripts/diagnose.py` is retained as legacy source and references an older model-response schema; it is not the current diagnostic entry point.
+Формат таблицы: лист `labels`, filename, примерный timestamp, русская бинарная метка, основной тип, описание. Время и текст аннотации используются только оценщиком после inference. `--type-map` — приватное evaluation-only сопоставление типов текущей аннотации: JSON с числовым суффиксом имени файла и списком ID типов. Оно не включено в публичный репозиторий. Без него оцениваются только бинарные метки, метрики типов не определены. Основной engine не читает таблицу и не получает имя видео. Повторно используются только точные SHA-256 дубликаты внутри этого запуска; результаты предыдущих опытов не подмешиваются.
 
-## Checks
+Сохраняются исходные ответы всех попыток, схемы, промпты, хеши и байты показанных кадров, журнал, факты, результаты и время. Это **приватные** материалы. Не добавляйте их в публичный репозиторий. Полный прогон с двумя видео одновременно измеряет разделяемую нагрузку, а не гарантированную задержку одного клиента. Параметры активного GPU и прочая конкурентная нагрузка не контролируются.
 
-```sh
-python -m unittest discover -s tests -v
+## Проверка кода
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
 ```
 
-All 41 existing tests pass on the deployment runtime. The public snapshot has no private fixture videos. A clean installation on a separate CUDA machine has not been validated.
+Тесты покрывают контракт API, отказ без ключа, session/range для видео, лимиты, принудительный deadline, реальные JPEG/PTS, транспорт модели, усечённые JSON ответы и фиксированную логику критериев. Они не доказывают правильность визуального распознавания. Исторические модули/скрипты сохранены для воспроизводимости старых экспериментов; рабочий entry point — `app.inference → app.release.engine`.
+
+## Ограничения
+
+Мелкие ключи, принадлежность денег, скрытые документы и состояние рабочей сессии часто неразличимы. Увеличение кадра не восстанавливает детали. `no_violation` означает отсутствие подтверждённого сигнала в данном проходе, а не гарантию соблюдения всех норм. Пространственные критерии зависят от фактически определённых рабочих зон. В каталоге отмечены прямые нормативные сопоставления и операционные интерпретации; вывод требует проверки человеком. Система не устанавливает личность и не формирует юридическое или дисциплинарное заключение.
+
+Для демонстрации нужны живые CPU/GPU процессы, действующий tunnel и доступность endpoint. Изменение ngrok домена требует правки конфигурации. Ключ жюри можно отозвать заменой файла и перезапуском приложения; модельный токен, SSH ключи и ngrok credentials жюри не передаются.

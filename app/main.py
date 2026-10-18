@@ -14,8 +14,10 @@ import httpx
 from fastapi import FastAPI, UploadFile, File, Header, HTTPException, Depends, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import APIKeyHeader
 from . import store
-from .config import DATA, ROOT, MAX_BYTES, JOB_TIMEOUT, MODEL_URL, RETENTION_HOURS
+from .config import DATA, ROOT, MAX_BYTES, JOB_TIMEOUT, RETENTION_HOURS
+from . import model_client
 from .examples import router as examples_router
 
 active=False
@@ -37,7 +39,7 @@ async def lifespan(app):
     store.init()
     for orphan in DATA.glob('*/input.mov'):
         orphan.unlink(missing_ok=True)
-    for orphan in DATA.glob('*/frames-*'):
+    for orphan in list(DATA.glob('*/frames-*')) + list(DATA.glob('final-*')):
         if orphan.is_dir(): shutil.rmtree(orphan,ignore_errors=True)
     cleaner=asyncio.create_task(cleanup())
     yield
@@ -45,7 +47,7 @@ async def lifespan(app):
     for t in list(tasks): t.cancel()
     await asyncio.gather(cleaner,*list(tasks),return_exceptions=True)
 
-app=FastAPI(title='CashGuard',version='0.1.0',lifespan=lifespan)
+app=FastAPI(title='CashGuard',version='1.0.0',lifespan=lifespan)
 
 class UploadLimit:
     def __init__(self,app): self.app=app
@@ -94,7 +96,9 @@ def authenticated(request: Request):
     except (ValueError, TypeError):
         return False
 
-def auth(request: Request):
+api_key_header=APIKeyHeader(name='X-API-Key',auto_error=False)
+
+def auth(request: Request, supplied=Depends(api_key_header)):
     if not authenticated(request):
         raise HTTPException(401,'Invalid API key')
 
@@ -112,11 +116,9 @@ async def session(request: Request):
 @app.get('/healthz')
 async def health():
     try:
-        async with httpx.AsyncClient(timeout=2,trust_env=False) as c:
-            r=await c.get(MODEL_URL.removesuffix('/v1')+'/health')
-            r.raise_for_status()
+        await model_client.available()
     except Exception: raise HTTPException(503,'Model unavailable')
-    return {'status':'ok','busy':active}
+    return {'status':'ok','busy':active,'pipeline':'qwen_fixed_facts_final','architecture_version':'2026.10.18-final.1'}
 
 async def run(job,path):
     global active
@@ -138,7 +140,7 @@ async def run(job,path):
     finally:
         # Evidence JPEGs persist in the result until expiry. Original uploads are removed immediately.
         path.unlink(missing_ok=True)
-        for scratch in path.parent.glob('frames-*'):
+        for scratch in list(path.parent.glob('frames-*')) + list(DATA.glob('final-*')):
             if scratch.is_dir(): shutil.rmtree(scratch,ignore_errors=True)
         active=False
 
@@ -147,10 +149,10 @@ async def submit(file:UploadFile=File(...)):
     global active
     if not (file.filename or '').lower().endswith('.mov'):
         raise HTTPException(415,'A .mov video is required')
-    if active: raise HTTPException(429,'GPU is busy; retry shortly',headers={'Retry-After':'10'})
+    if active: raise HTTPException(429,'Analysis worker is busy; retry shortly',headers={'Retry-After':'10'})
     await health()
     # A single application worker owns admission. No unbounded queue can consume the five-minute SLA.
-    if active: raise HTTPException(429,'GPU is busy; retry shortly',headers={'Retry-After':'10'})
+    if active: raise HTTPException(429,'Analysis worker is busy; retry shortly',headers={'Retry-After':'10'})
     active=True
     job=uuid.uuid4().hex
     folder=DATA/job
